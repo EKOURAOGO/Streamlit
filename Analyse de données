@@ -1,0 +1,68 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Configuration de la page
+st.set_page_config(page_title="Analyse des Revenus - Métropole de Lille", layout="centered")
+
+# Titre
+st.title("Analyse des Revenus dans la Métropole de Lille")
+
+# Charger les données
+uploaded_file = st.sidebar.file_uploader("Choisissez un fichier CSV", type=["csv"])
+
+if uploaded_file is not None:
+    data = pd.read_csv(uploaded_file)
+
+    # Aperçu des données
+    st.header("Aperçu des données")
+    st.write(data.head())
+
+    # Afficher des informations générales sur les données
+    st.subheader("Informations générales")
+    st.write(data.describe())
+
+    # Choisir la colonne pour l'analyse
+    columns = data.columns.tolist()
+    column_to_analyze = st.selectbox("Choisissez une colonne à analyser", columns)
+
+    # Graphique de distribution
+    st.subheader(f"Distribution des valeurs de '{column_to_analyze}'")
+    fig, ax = plt.subplots()
+    sns.histplot(data[column_to_analyze], kde=True, ax=ax)
+    ax.set_title(f"Distribution de {column_to_analyze}")
+    st.pyplot(fig)
+
+    # Graphique de la moyenne des revenus par région (ou autre variable si pertinente)
+    if "Région" in columns:
+        st.subheader("Moyenne des revenus par région")
+        fig, ax = plt.subplots()
+        data.groupby("Région")[column_to_analyze].mean().plot(kind="bar", ax=ax)
+        ax.set_ylabel("Moyenne des revenus")
+        ax.set_title("Moyenne des revenus par région")
+        st.pyplot(fig)
+
+    # Relation entre deux colonnes
+    if st.checkbox("Comparer deux variables"):
+        col1 = st.selectbox("Choisissez la première colonne", columns, index=0)
+        col2 = st.selectbox("Choisissez la deuxième colonne", columns, index=1)
+        
+        st.subheader(f"Relation entre '{col1}' et '{col2}'")
+        fig, ax = plt.subplots()
+        sns.scatterplot(data=data, x=col1, y=col2, ax=ax)
+        ax.set_title(f"Relation entre {col1} et {col2}")
+        st.pyplot(fig)
+
+    # Afficher la corrélation entre les variables numériques
+    if st.checkbox("Afficher la matrice de corrélation"):
+        st.subheader("Matrice de corrélation")
+        fig, ax = plt.subplots()
+        sns.heatmap(data.corr(), annot=True, cmap="coolwarm", ax=ax)
+        st.pyplot(fig)
+
+else:
+    st.write("Veuillez télécharger un fichier CSV depuis la barre latérale pour démarrer l'analyse.")
+
+# Footer
+st.write("Analyse des données de revenus réalisée avec Streamlit.")
