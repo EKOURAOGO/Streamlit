@@ -7,7 +7,7 @@ import seaborn as sns
 st.set_page_config(page_title="Analyse des Revenus - Métropole de Lille", layout="centered")
 
 # Titre
-st.title("Analyse des Revenus dans la Métropole de Lille")
+st.title("Analyse des données")
 
 # Charger les données
 uploaded_file = st.sidebar.file_uploader("Choisissez un fichier CSV", type=["csv"])
